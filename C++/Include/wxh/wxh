@@ -1,0 +1,29 @@
+//
+// wxh
+//     Copyright (c) kuailedetongnian all rights reserved.
+//
+
+//
+// /C++/Include/wxh/wxh
+//
+
+#ifndef _WXH_
+#define _WXH_
+
+#define _WXH_BEGIN      namespace wxh {
+#define _WXH_END        }
+#define _WXH            ::wxh::
+#define _WXH_USE        using namespace wxh;
+#define _INTERNAL_BEGIN namespace Internal {
+#define _INTERNAL_END   }
+#define _INTERNAL       ::Internal::
+
+_WXH_BEGIN
+
+_INTERNAL_BEGIN
+
+_INTERNAL_END
+
+_WXH_END
+
+#endif /* _WXH_ */
