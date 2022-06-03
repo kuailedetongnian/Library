@@ -12,18 +12,29 @@
 
 #include "../Continuity.h"
 #include "../types.h"
+#include <stdarg.h>
 #include <string.h>
 
-Continuity_t*
+size_t
 Continuity_init(
-    Continuity_t *const conty)
+    const size_t quantity,
+    ...)
 {
-    if(conty == NULL) {
-        return NULL;
+    va_list ap;
+    va_start(ap, quantity);
+    size_t success = 0;
+    Continuity_t* conty = NULL;
+    for(size_t i = 0; i < quantity; i++)
+    {
+        conty = va_arg(ap, Continuity_t*);
+        if(conty != NULL) {
+            conty->data = NULL;
+            conty->size = 0;
+            success++;
+        }
     }
-    conty->data = NULL;
-    conty->size = 0;
-    return conty;
+    va_end(ap);
+    return success;
 }
 
 Continuity_t*
@@ -36,7 +47,7 @@ Continuity_resize(
         return NULL;
     }
     if(size == 0) {
-        Continuity_free(conty);
+        Continuity_free(1, conty);
         return conty;
     }
     if(conty->data == NULL) {
@@ -72,7 +83,8 @@ Continuity_nResize(
         return NULL;
     }
     if(size == 0) {
-        Continuity_free(conty);
+        Continuity_free(1, conty);
+        return conty;
     }
     if(conty->size == 0) {
         return Continuity_resize(conty, size, 0);
@@ -83,22 +95,37 @@ Continuity_nResize(
 
     void *const oldContyData = conty->data;
     conty->data = Continuity_malloc(size);
+    if(conty->data == NULL) {
+        conty->data = oldContyData;
+        return NULL;
+    }
     memcpy((uint8_t*)conty->data + desBeginIndex, (uint8_t*)oldContyData + srcBeginIndex, copySize);
     conty->size = size;
+    free(oldContyData);
     return conty;
 }
 
-Continuity_t*
+size_t
 Continuity_free(
-    Continuity_t *const conty)
+    const size_t quantity,
+    ...)
 {
-    if(conty == NULL) {
-        return NULL;
+    va_list ap;
+    va_start(ap, quantity);
+    size_t success = 0;
+    Continuity_t* conty = NULL;
+    for(size_t i = 0; i < quantity; i++)
+    {
+        conty = va_arg(ap, Continuity_t*);
+        if(conty != NULL) {
+            free(conty);
+            conty->data = NULL;
+            conty->size = 0;
+            success++;
+        }
     }
-    free(conty->data);
-    conty->data = NULL;
-    conty->size = 0;
-    return conty;
+    va_end(ap);
+    return success;
 }
 
 Continuity_t*
@@ -142,6 +169,7 @@ Continuity_copy(
             return NULL;
         }
         memcpy(desConty->data, srcConty->data, srcConty->size);
+        return desConty;
     }
     if(desConty->size < srcConty->size) {
         Continuity_resize(desConty, srcConty->size, 0);
