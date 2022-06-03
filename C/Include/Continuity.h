@@ -65,4 +65,3 @@ Continuity_copy(
 #include "src/Continuity.c"
 
 #endif /* _CONTINUITY_H_ */
-
